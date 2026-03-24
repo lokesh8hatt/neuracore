@@ -519,27 +519,27 @@ async function callGemini(prompt) {
 
 function buildDecodePrompt(input, name) {
     const ctx = name ? `The person's name is ${name}. ` : '';
-    return `You are NEURACORE, an elite AI behavioral psychologist. ${ctx}Analyze the following user input and respond ONLY with a valid JSON object matching this exact schema (no markdown, no extra text):
+    return `You are NEURACORE, an elite AI behavioral psychologist. ${ctx}Analyze the following user input and respond ONLY with a valid JSON object matching this schema. IMPORTANT: If the input is completely meaningless, random gibberish (like 'asdfg'), or too short to read, DO NOT hallucinate traits. Instead, fill the schema with meta-commentary calling them out for providing lazy or meaningless text.
 {"archetype":"2-3 word archetype","summary":"2-3 insightful sentences","traits":[{"label":"Openness","score":0},{"label":"Conscientiousness","score":0},{"label":"Extraversion","score":0},{"label":"Agreeableness","score":0},{"label":"Emotional Stability","score":0}],"mbti_hint":"Most likely MBTI type with one-sentence reasoning","strengths":"2-3 specific hidden strengths","weaknesses":"2-3 specific blind spots","prediction":"5-year prediction: without change vs with change"}
 User Input: """${input}"""`;
 }
 
 function buildRoastPrompt(input, name) {
     const ctx = name ? `The person's name is ${name}. ` : '';
-    return `You are NEURACORE's Roast Engine. ${ctx}Savage, witty, brutally honest. Respond ONLY with valid JSON (no markdown):
+    return `You are NEURACORE's Roast Engine. ${ctx}Savage, witty, brutally honest. IMPORTANT: If the input is meaningless gibberish or random letters, absolutely destroy them for thinking keyboard mashing is a personality. Respond ONLY with valid JSON (no markdown):
 {"archetype":"darkly funny 2-3 word roast archetype","reality_check":"3-4 sentence devastating but fair roast, specific to their text","myth_busted":"a belief they hold that is clearly false and why","blindspot":"the one thing sabotaging them they can't see","verdict":"one punchy final sentence that stings because it's true"}
 User Input: """${input}"""`;
 }
 
 function buildBoostPrompt(input, name) {
     const ctx = name ? `The person's name is ${name}. ` : '';
-    return `You are NEURACORE's Peak Performance Engine. ${ctx}Respond ONLY with valid JSON (no markdown):
+    return `You are NEURACORE's Peak Performance Engine. ${ctx}IMPORTANT: If the input is meaningless gibberish, tell them step 1 of any success plan is actually trying. Respond ONLY with valid JSON (no markdown):
 {"archetype":"empowering 2-3 word archetype","foundation":"single most important mindset shift, be specific","strategy":"core strategic principle for their situation","blueprint":["Week 1: specific action","Week 2: specific action","Week 3: specific action","Week 4: specific action"],"superpower":"unique competitive advantage they are underusing"}
 User Input: """${input}"""`;
 }
 
 function buildCompatPrompt(inputA, inputB) {
-    return `You are NEURACORE's Neural Synergy Engine. Analyze two people's profiles and determine their compatibility. Respond ONLY with a valid JSON object (no markdown):
+    return `You are NEURACORE's Neural Synergy Engine. Analyze two people's profiles and determine their compatibility. IMPORTANT: If either input is just keyboard mashing or meaningless, score them extremely low and tell them communication requires actual words. Respond ONLY with a valid JSON object (no markdown):
 {
   "synergy_score": <0-100 integer, representing compatibility percentage>,
   "verdict": "A 3-5 word relationship/compatibility verdict (e.g. Explosive Creative Tension)",
@@ -609,12 +609,33 @@ function parseAIResponse(text) {
     }
 }
 
+// ── QUALITY CONTROL ────────────────────────────────────────────────────
+function isMeaningfulInput(text) {
+    const cleaned = text.trim();
+    if (cleaned.length < 15) return false;
+    
+    // Check for keyboard mashing (e.g. "asdfasdfasdf")
+    const alphas = cleaned.replace(/[^a-zA-Z]/g, '');
+    if (alphas.length > 5) {
+        const unique = new Set(alphas.toLowerCase()).size;
+        // If they typed 20 characters but only used 3 distinct letters (aaaabbb)
+        if (unique < 4) return false;
+        // Real english requires vowels/y
+        if (!/[aeiouy]/i.test(alphas)) return false;
+    }
+    return true;
+}
+
 // ── SOLO ANALYSIS ──────────────────────────────────────────────────────
 async function analyze(mode) {
     const input = document.getElementById('user-input').value;
     const userName = document.getElementById('user-name-input').value.trim();
-    if (!input.trim()) {
-        alert("Please write something first — the more you share, the better the analysis.");
+    
+    if (!isMeaningfulInput(input)) {
+        alert("Please write a bit more context. Meaningless or very short text cannot be accurately analyzed.");
+        const ta = document.getElementById('user-input');
+        ta.classList.add('shake');
+        setTimeout(() => ta.classList.remove('shake'), 400);
         return;
     }
 
@@ -776,10 +797,11 @@ function appendCard(container, titleText, contentHtml, index) {
 
 // ── COMPATIBILITY ANALYSIS ─────────────────────────────────────────────
 async function analyzeCompatibility() {
-    const inputA = document.getElementById('compat-input-a').value.trim();
-    const inputB = document.getElementById('compat-input-b').value.trim();
-    if (!inputA || !inputB) {
-        alert('Both profiles are required for Neural Synergy analysis.');
+    const inputA = document.getElementById('compat-input-a').value;
+    const inputB = document.getElementById('compat-input-b').value;
+    
+    if (!isMeaningfulInput(inputA) || !isMeaningfulInput(inputB)) {
+        alert("Both profiles need meaningful content to run a compatibility check.");
         return;
     }
 

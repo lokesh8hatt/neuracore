@@ -67,6 +67,16 @@ function updateCharCounter() {
     if (input.value.length > 2000) input.value = input.value.substring(0, 2000);
 }
 
+function usePrompt(btn) {
+    const textarea = document.getElementById('user-input');
+    textarea.value = btn.textContent;
+    textarea.focus();
+    // Move cursor to end
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    updateCharCounter();
+    playUiSound(528, 'sine', 0.08);
+}
+
 // ── History Management ─────────────────────────────────────────────────
 function saveToHistory(mode, data, userInput, userName) {
     const summary = data.summary || data.reality_check || data.foundation || data.dynamic || '';

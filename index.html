@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEURACORE | AI Behavioral Analysis</title>
-    <meta name="description" content="Discover your true self or get roasted by an elite behavioral AI. Cinematic personality analysis powered by real AI.">
+    <meta name="description"
+        content="Discover your true self or get roasted by an elite behavioral AI. Cinematic personality analysis powered by real AI.">
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#9d50bb">
@@ -14,11 +16,14 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div id="three-canvas-container"></div>
     <div class="glow-bg" id="glow-bg"></div>
@@ -49,18 +54,23 @@
     <div class="soundscape-bar" id="soundscape-bar">
         <span class="soundscape-label">◈ AMBIENT</span>
         <div class="soundscape-modes">
-            <button class="sound-mode-btn active" id="snd-neutral" onclick="setAmbientMode('neutral')" title="Neutral">⬡</button>
-            <button class="sound-mode-btn" id="snd-calm" onclick="setAmbientMode('calm')" title="Calm (Boost)">∿</button>
-            <button class="sound-mode-btn" id="snd-intense" onclick="setAmbientMode('intense')" title="Intense (Roast)">⚡</button>
+            <button class="sound-mode-btn active" id="snd-neutral" onclick="setAmbientMode('neutral')"
+                title="Neutral">⬡</button>
+            <button class="sound-mode-btn" id="snd-calm" onclick="setAmbientMode('calm')"
+                title="Calm (Boost)">∿</button>
+            <button class="sound-mode-btn" id="snd-intense" onclick="setAmbientMode('intense')"
+                title="Intense (Roast)">⚡</button>
         </div>
-        <button class="sound-toggle-btn" id="sound-toggle" onclick="toggleAmbient()" title="Toggle Ambient Audio">🔇</button>
+        <button class="sound-toggle-btn" id="sound-toggle" onclick="toggleAmbient()"
+            title="Toggle Ambient Audio">🔇</button>
     </div>
 
     <!-- API Key Modal -->
     <div id="api-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <h3 class="modal-title">🔑 Connect Your AI</h3>
-            <p class="modal-subtitle">Enter a Gemini API key to unlock real-time behavioral intelligence. Leave blank to use demo mode.</p>
+            <p class="modal-subtitle">Enter a Gemini API key to unlock real-time behavioral intelligence. Leave blank to
+                use demo mode.</p>
             <input type="password" id="api-key-input" placeholder="AIza..." class="api-input" />
             <div class="modal-actions">
                 <button onclick="saveApiKey()" class="btn-primary" id="save-api-btn">Activate Intelligence</button>
@@ -82,11 +92,14 @@
                     <span class="status-dot demo"></span>
                     <span id="ai-status-text">Demo Mode — Click to Connect AI</span>
                 </div>
-                <h1 class="hero-title">See Who You Really Are — <br><span class="gradient-text">Or Get Roasted Trying</span></h1>
-                <p class="hero-subtitle">Advanced behavioral AI that decodes the patterns behind your words. Enter your thoughts, goals, or life story.</p>
+                <h1 class="hero-title">See Who You Really Are — <br><span class="gradient-text">Or Get Roasted
+                        Trying</span></h1>
+                <p class="hero-subtitle">Advanced behavioral AI that decodes the patterns behind your words. Enter your
+                    thoughts, goals, or life story.</p>
                 <div class="hero-cta-grid">
                     <button onclick="navigateTo('input')" class="btn-primary" id="solo-btn">Solo Analysis</button>
-                    <button onclick="navigateTo('compat')" class="btn-outline" id="compat-btn">⚡ Compatibility Mode</button>
+                    <button onclick="navigateTo('compat')" class="btn-outline" id="compat-btn">⚡ Compatibility
+                        Mode</button>
                 </div>
                 <div class="feature-pills">
                     <span class="pill">🧠 Big Five + MBTI</span>
@@ -103,10 +116,20 @@
         <section id="input-view" class="view">
             <div class="glass-card">
                 <button onclick="navigateTo('landing')" class="btn-back">← Back</button>
-                <h2 class="section-title">Feed the AI</h2>
-                <input type="text" id="user-name-input" class="name-input" placeholder="Your name (optional — personalizes your analysis)" maxlength="50" />
+                <h2 class="section-title">What's your story?</h2>
+                <p class="section-sub">Write anything — your thoughts, goals, fears, a rant, your situation. The AI reads between the lines.</p>
+                <input type="text" id="user-name-input" class="name-input" placeholder="Your name (optional)" maxlength="50" />
+                <div class="prompt-chips">
+                    <span class="chip-label">Try →</span>
+                    <button class="prompt-chip" onclick="usePrompt(this)">I'm an overthinker who…</button>
+                    <button class="prompt-chip" onclick="usePrompt(this)">My biggest fear is…</button>
+                    <button class="prompt-chip" onclick="usePrompt(this)">I keep self-sabotaging by…</button>
+                    <button class="prompt-chip" onclick="usePrompt(this)">My dream is… but I always…</button>
+                    <button class="prompt-chip" onclick="usePrompt(this)">People say I'm… but I feel…</button>
+                    <button class="prompt-chip" onclick="usePrompt(this)">In relationships I tend to…</button>
+                </div>
                 <div class="input-container">
-                    <textarea id="user-input" placeholder="Paste your bio, describe your habits, your goals, your biggest fears—or just say what's on your mind. The more you give, the deeper the cut."></textarea>
+                    <textarea id="user-input" placeholder="Start typing — the more raw and real, the sharper the analysis..."></textarea>
                     <div class="char-counter" id="char-counter">0 / 2000</div>
                 </div>
                 <div class="action-grid">
@@ -134,18 +157,21 @@
             <div class="glass-card compat-card">
                 <button onclick="navigateTo('landing')" class="btn-back">← Back</button>
                 <h2 class="section-title">⚡ Neural Synergy</h2>
-                <p class="section-sub">Enter two people's profiles. The AI will compute your neural compatibility score.</p>
+                <p class="section-sub">Enter two people's profiles. The AI will compute your neural compatibility score.
+                </p>
                 <div class="compat-grid">
                     <div class="compat-person">
                         <label class="person-label person-a">Person A</label>
-                        <textarea id="compat-input-a" placeholder="Person A: Describe yourself, your values, how you behave..."></textarea>
+                        <textarea id="compat-input-a"
+                            placeholder="Person A: Describe yourself, your values, how you behave..."></textarea>
                     </div>
                     <div class="compat-vs">
                         <div class="vs-circle">VS</div>
                     </div>
                     <div class="compat-person">
                         <label class="person-label person-b">Person B</label>
-                        <textarea id="compat-input-b" placeholder="Person B: Describe the other person, their strengths, weaknesses..."></textarea>
+                        <textarea id="compat-input-b"
+                            placeholder="Person B: Describe the other person, their strengths, weaknesses..."></textarea>
                     </div>
                 </div>
                 <button onclick="analyzeCompatibility()" class="btn-primary compat-submit-btn" id="compat-submit-btn">
@@ -193,7 +219,8 @@
                         <span class="share-icon">✦</span>
                     </button>
                     <div class="social-share-buttons">
-                        <button onclick="shareToTwitter()" class="btn-social twitter" title="Share on X/Twitter">𝕏 Post</button>
+                        <button onclick="shareToTwitter()" class="btn-social twitter" title="Share on X/Twitter">𝕏
+                            Post</button>
                         <button onclick="shareGeneric()" class="btn-social native" title="Share...">↑ Share</button>
                     </div>
                 </div>
@@ -223,7 +250,8 @@
             <div class="card-body">
                 <h1 id="card-username">THE ARCHITECT</h1>
                 <div class="stats-container" id="card-stats"></div>
-                <p class="card-insight" id="card-insight">"Your obsession with aesthetics is a shield against mediocrity."</p>
+                <p class="card-insight" id="card-insight">"Your obsession with aesthetics is a shield against
+                    mediocrity."</p>
             </div>
             <div class="card-footer">
                 <span>IDENTITY VERIFIED</span>
@@ -234,4 +262,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

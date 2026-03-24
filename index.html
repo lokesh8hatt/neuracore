@@ -94,8 +94,7 @@
                 </div>
                 <h1 class="hero-title">See Who You Really Are — <br><span class="gradient-text">Or Get Roasted
                         Trying</span></h1>
-                <p class="hero-subtitle">Advanced behavioral AI that decodes the patterns behind your words. Enter your
-                    thoughts, goals, or life story.</p>
+                <p class="hero-subtitle">Just write what's on your mind — your goals, struggles, or how you see yourself. We'll handle the rest.</p>
                 <div class="hero-cta-grid">
                     <button onclick="startGuidedMode()" class="btn-guided" id="guided-btn">
                         <span>🎯 Guided Q&amp;A</span>
@@ -105,12 +104,12 @@
                     <button onclick="navigateTo('compat')" class="btn-outline" id="compat-btn">⚡ Compatibility</button>
                 </div>
                 <div class="feature-pills">
-                    <span class="pill">🧠 Big Five + MBTI</span>
-                    <span class="pill">📊 Trait Visualizer</span>
-                    <span class="pill">🔥 AI Roast Engine</span>
-                    <span class="pill">🤝 Neural Synergy</span>
-                    <span class="pill">📂 History Log</span>
-                    <span class="pill">📲 Installable App</span>
+                    <span class="pill">🧠 Personality Analysis</span>
+                    <span class="pill">📊 Visual Report</span>
+                    <span class="pill">🔥 Honest Critique</span>
+                    <span class="pill">🤝 Compatibility Test</span>
+                    <span class="pill">📂 Saves Your Results</span>
+                    <span class="pill">📲 Works on Mobile</span>
                 </div>
             </div>
         </section>
@@ -207,7 +206,7 @@
                     </div>
                 </div>
                 <button onclick="analyzeCompatibility()" class="btn-primary compat-submit-btn" id="compat-submit-btn">
-                    ⚡ Compute Neural Synergy
+                    ⚡ Check Our Compatibility
                 </button>
             </div>
         </section>
@@ -223,7 +222,7 @@
 
             <!-- Trait Radar Chart -->
             <div id="radar-container" class="radar-wrapper hidden">
-                <h3 class="radar-title">Neural Trait Map</h3>
+                <h3 class="radar-title">Your Personality Breakdown</h3>
                 <div class="radar-canvas-wrap">
                     <canvas id="traitRadar"></canvas>
                 </div>
@@ -257,13 +256,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Try Another Mode -->
+            <div class="switch-mode-panel" id="switch-mode-panel">
+                <p class="switch-mode-label">Want a different perspective on the same answers?</p>
+                <div class="switch-mode-btns">
+                    <button onclick="switchMode('decode')" class="btn-switch-mode" id="switch-decode">👁 Decode Me</button>
+                    <button onclick="switchMode('roast')" class="btn-switch-mode" id="switch-roast">🔥 Roast Me</button>
+                    <button onclick="switchMode('boost')" class="btn-switch-mode" id="switch-boost">🚀 Boost Me</button>
+                </div>
+            </div>
         </section>
 
         <!-- Loading State -->
         <div id="loader" class="loader-overlay hidden">
             <div class="loader-content">
                 <div class="loader-orb"></div>
-                <p id="loader-text">Quantifying consciousness...</p>
+                <p id="loader-text">Analysing your profile...</p>
                 <div class="loader-progress">
                     <div class="loader-bar" id="loader-bar"></div>
                 </div>

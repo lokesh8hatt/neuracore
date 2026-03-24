@@ -431,6 +431,44 @@ textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(33
 .viral-footer { margin-top: 4rem; }
 .share-panel { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
 
+/* ===================== SWITCH MODE PANEL ===================== */
+.switch-mode-panel {
+    margin-top: 3rem;
+    padding: 2rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    background: var(--glass);
+    text-align: center;
+}
+.switch-mode-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+}
+.switch-mode-btns {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.btn-switch-mode {
+    padding: 0.7rem 1.6rem;
+    border-radius: 100px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.btn-switch-mode:not(:disabled):hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--accent-purple);
+    transform: translateY(-2px);
+}
+
 .btn-share {
     padding: 1.1rem 2.5rem;
     background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));

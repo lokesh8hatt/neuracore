@@ -13,6 +13,8 @@ let ambientMode = 'neutral';
 let radarChart = null;
 let synergyChart = null;
 let lastResultText = '';
+let lastInput = '';
+let lastUserName = '';
 let analysisHistory = JSON.parse(localStorage.getItem('neuracore_history') || '[]');
 
 const views = {
@@ -612,9 +614,12 @@ async function analyze(mode) {
     const input = document.getElementById('user-input').value;
     const userName = document.getElementById('user-name-input').value.trim();
     if (!input.trim()) {
-        alert("The AI needs something to feed on. Enter some text first.");
+        alert("Please write something first — the more you share, the better the analysis.");
         return;
     }
+
+    lastInput = input;
+    lastUserName = userName;
 
     currentMode = mode;
     const glowBg = document.getElementById('glow-bg');
@@ -655,33 +660,33 @@ function renderSoloResults(mode, data) {
     container.innerHTML = '';
 
     const titleMap = {
-        decode: `<span class="gradient-text">The Architect's Blueprint</span>`,
-        roast: `<span class="gradient-text">Cold Hard Truth</span>`,
-        boost: `<span class="gradient-text">The Success Roadmap</span>`
+        decode: `<span class="gradient-text">Your Personality Report</span>`,
+        roast:  `<span class="gradient-text">The Honest Truth</span>`,
+        boost:  `<span class="gradient-text">Your Success Plan</span>`
     };
     title.innerHTML = titleMap[mode];
 
     const cardsMap = {
         decode: [
-            { title: "Neural Archetype", content: data.archetype },
-            { title: "Personality Summary", content: data.summary },
-            { title: "🧬 MBTI Signature", content: data.mbti_hint || 'Analysis unavailable.' },
-            { title: "Hidden Strengths", content: (data.strengths || '').replace(/\n/g, '<br>') },
-            { title: "Critical Blind Spots", content: (data.weaknesses || '').replace(/\n/g, '<br>') },
-            { title: "5-Year Prediction", content: data.prediction },
+            { title: "Your Personality Type",  content: data.archetype },
+            { title: "Personality Summary",     content: data.summary },
+            { title: "Personality Style (MBTI)", content: data.mbti_hint || 'Not available.' },
+            { title: "Your Strengths",           content: (data.strengths || '').replace(/\n/g, '<br>') },
+            { title: "Areas to Work On",         content: (data.weaknesses || '').replace(/\n/g, '<br>') },
+            { title: "Where You're Headed",     content: data.prediction },
         ],
         roast: [
-            { title: "Who You Really Are", content: data.archetype },
-            { title: "The Reality Check", content: data.reality_check },
-            { title: "The Myth You Believe", content: data.myth_busted },
-            { title: "Your Fatal Blind Spot", content: data.blindspot },
-            { title: "The Verdict", content: `<em style="color: var(--accent-pink)">${data.verdict}</em>` },
+            { title: "Your Personality Type",   content: data.archetype },
+            { title: "The Honest Truth",         content: data.reality_check },
+            { title: "What You've Got Wrong",   content: data.myth_busted },
+            { title: "Your Biggest Weakness",   content: data.blindspot },
+            { title: "The Bottom Line",          content: `<em style="color: var(--accent-pink)">${data.verdict}</em>` },
         ],
         boost: [
-            { title: "Your Archetype", content: data.archetype },
-            { title: "The Foundation Shift", content: data.foundation },
-            { title: "Core Strategy", content: data.strategy },
-            { title: "Your Superpower", content: data.superpower },
+            { title: "Your Type",               content: data.archetype },
+            { title: "First, Change This",      content: data.foundation },
+            { title: "Your Game Plan",          content: data.strategy },
+            { title: "Your Biggest Strength",  content: data.superpower },
         ]
     };
 
@@ -695,7 +700,7 @@ function renderSoloResults(mode, data) {
         bpCard.className = 'result-card';
         bpCard.style.animationDelay = `${cards.length * 0.2}s`;
         bpCard.innerHTML = `
-            <div class="card-title">30-Day Success Blueprint</div>
+            <div class="card-title">Your 30-Day Action Plan</div>
             <ul class="blueprint-list">
                 ${data.blueprint.map(item => {
                     const [week, ...rest] = item.split(':');
@@ -722,7 +727,42 @@ function renderSoloResults(mode, data) {
     }
 
     // Prep identity card
-    prepareIdCard(data, mode);
+    prepareIdCard(data, mode, lastUserName);
+    updateSwitchBtns(mode);
+    document.getElementById('switch-mode-panel').style.display = '';
+}
+
+function updateSwitchBtns(activeMode) {
+    ['decode', 'roast', 'boost'].forEach(m => {
+        const btn = document.getElementById(`switch-${m}`);
+        if (!btn) return;
+        btn.disabled = (m === activeMode);
+        btn.style.opacity = (m === activeMode) ? '0.35' : '1';
+        btn.style.cursor = (m === activeMode) ? 'default' : 'pointer';
+    });
+}
+
+async function switchMode(mode) {
+    if (!lastInput) return;
+    currentMode = mode;
+    const glowBg = document.getElementById('glow-bg');
+    glowBg.className = 'glow-bg';
+    if (mode === 'roast') glowBg.classList.add('mode-roast');
+    else if (mode === 'boost') glowBg.classList.add('mode-boost');
+
+    showLoader(mode);
+    let aiData = null;
+    if (apiKey) {
+        const promptFn = { decode: buildDecodePrompt, roast: buildRoastPrompt, boost: buildBoostPrompt }[mode];
+        const rawText = await callGemini(promptFn(lastInput, lastUserName));
+        if (rawText) aiData = parseAIResponse(rawText);
+    }
+    const data = aiData || { decode: mockDecodeData, roast: mockRoastData, boost: mockBoostData }[mode];
+    lastResultText = buildShareText(data, mode);
+    saveToHistory(mode, data, lastInput, lastUserName);
+    hideLoader();
+    renderSoloResults(mode, data);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function appendCard(container, titleText, contentHtml, index) {
@@ -751,12 +791,13 @@ async function analyzeCompatibility() {
         if (raw) data = parseAIResponse(raw);
     }
     data = data || mockCompatData;
-    lastResultText = `Our Neural Synergy Score: ${data.synergy_score}% — "${data.verdict}". Analyzed by NEURACORE AI.`;
+    lastResultText = `Our Compatibility Score: ${data.synergy_score}% — "${data.verdict}". Analysed by NEURACORE.`;
     saveToHistory('compat', data, inputA + ' | ' + inputB, '');
 
     hideLoader();
     renderCompatResults(data);
     navigateTo('result');
+    document.getElementById('switch-mode-panel').style.display = 'none';
 }
 
 function renderCompatResults(data) {
@@ -870,10 +911,10 @@ function renderSynergyGauge(score, verdict) {
 
 // ── LOADER ─────────────────────────────────────────────────────────────
 const loaderTexts = {
-    decode: ["Scanning neural patterns...", "Calibrating Big Five model...", "Identifying hidden behaviors...", "Simulating future outcomes...", "Finalizing your blueprint..."],
-    roast: ["Loading savage mode...", "Identifying contradictions...", "Sharpening the blade...", "Preparing brutal truth...", "No mercy. Finalizing verdict..."],
-    boost: ["Scanning for potential...", "Mapping success pathways...", "Calculating optimal leverage...", "Engineering your roadmap...", "Unlocking peak performance..."],
-    compat: ["Scanning profiles...", "Computing neural signatures...", "Measuring tension and alignment...", "Running synergy algorithm...", "Finalizing compatibility report..."]
+    decode: ["Reading your words...", "Checking personality traits...", "Finding patterns...", "Looking at your future...", "Almost done..."],
+    roast:  ["Getting ready to be honest...", "Finding what to say...", "No sugar-coating...", "This might sting a little...", "Almost ready..."],
+    boost:  ["Finding your strengths...", "Building your plan...", "Working out the best path...", "Putting it all together...", "Almost there..."],
+    compat: ["Reading both profiles...", "Comparing personalities...", "Finding common ground...", "Spotting the differences...", "Almost done..."]
 };
 
 async function showLoader(mode) {

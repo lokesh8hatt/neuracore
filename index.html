@@ -97,9 +97,12 @@
                 <p class="hero-subtitle">Advanced behavioral AI that decodes the patterns behind your words. Enter your
                     thoughts, goals, or life story.</p>
                 <div class="hero-cta-grid">
-                    <button onclick="navigateTo('input')" class="btn-primary" id="solo-btn">Solo Analysis</button>
-                    <button onclick="navigateTo('compat')" class="btn-outline" id="compat-btn">⚡ Compatibility
-                        Mode</button>
+                    <button onclick="startGuidedMode()" class="btn-guided" id="guided-btn">
+                        <span>🎯 Guided Q&amp;A</span>
+                        <span class="btn-guided-sub">Recommended — 6 smart questions</span>
+                    </button>
+                    <button onclick="navigateTo('input')" class="btn-outline" id="solo-btn">✍️ Free Write</button>
+                    <button onclick="navigateTo('compat')" class="btn-outline" id="compat-btn">⚡ Compatibility</button>
                 </div>
                 <div class="feature-pills">
                     <span class="pill">🧠 Big Five + MBTI</span>
@@ -148,6 +151,35 @@
                         <span class="btn-label">Boost Me</span>
                         <span class="btn-sub">30-Day Success Blueprint</span>
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Guided Q&A Section -->
+        <section id="guided-view" class="view">
+            <div class="glass-card guided-card">
+                <button onclick="exitGuided()" class="btn-back">← Back</button>
+
+                <!-- Progress -->
+                <div class="guided-header">
+                    <div class="guided-step-label">Question <span id="guided-current">1</span> <span class="guided-of">of</span> <span id="guided-total">6</span></div>
+                    <div class="guided-bar-bg"><div class="guided-bar-fill" id="guided-bar-fill"></div></div>
+                </div>
+
+                <!-- Name -->
+                <input type="text" id="guided-name" class="name-input" placeholder="Your name (optional)" maxlength="50" style="margin-bottom:1.5rem" />
+
+                <!-- Question Area -->
+                <div id="guided-question-area" class="guided-question-area">
+                    <h2 class="guided-question" id="guided-question-text"></h2>
+                    <p class="guided-hint" id="guided-hint-text"></p>
+                    <textarea id="guided-answer" class="guided-textarea" rows="4"></textarea>
+                </div>
+
+                <!-- Navigation -->
+                <div class="guided-nav" id="guided-nav">
+                    <button onclick="guidedBack()" class="btn-secondary" id="guided-back-btn">← Prev</button>
+                    <button onclick="guidedNext()" class="btn-primary" id="guided-next-btn">Next →</button>
                 </div>
             </div>
         </section>

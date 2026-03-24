@@ -543,6 +543,148 @@ textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(33
     .history-toggle-btn { top: 1rem; left: 1rem; }
 }
 
+/* ===================== GUIDED CTA BUTTON ===================== */
+.hero-cta-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+}
+.hero-cta-grid .btn-outline {
+    width: 100%;
+    max-width: 380px;
+}
+.btn-guided {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.25rem;
+    padding: 1.1rem 2.5rem;
+    border: none; border-radius: 100px;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    color: white;
+    font-family: var(--font-body); font-weight: 700; font-size: 1.05rem;
+    cursor: pointer;
+    width: 100%; max-width: 380px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 40px rgba(157, 80, 187, 0.35);
+}
+.btn-guided:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(157, 80, 187, 0.5);
+}
+.btn-guided-sub {
+    font-size: 0.75rem; font-weight: 400;
+    opacity: 0.8; letter-spacing: 0.03em;
+}
+
+/* ===================== GUIDED Q&A ===================== */
+.guided-card { max-width: 660px; }
+
+.guided-header {
+    margin-bottom: 2rem;
+}
+.guided-step-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+}
+.guided-of { opacity: 0.5; }
+.guided-bar-bg {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.guided-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.guided-question-area {
+    min-height: 220px;
+}
+.guided-question-area.slide-in {
+    animation: slideQuestion 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideQuestion {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.guided-question {
+    font-family: var(--font-heading);
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    line-height: 1.2;
+    margin-bottom: 0.6rem;
+    color: var(--text-primary);
+}
+.guided-hint {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+.guided-textarea {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.2rem 1.4rem;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    resize: none;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    line-height: 1.6;
+}
+.guided-textarea:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(33,230,255,0.08);
+}
+.guided-textarea.shake {
+    animation: shake 0.4s ease;
+    border-color: var(--accent-pink);
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-8px); }
+    40%       { transform: translateX(8px); }
+    60%       { transform: translateX(-5px); }
+    80%       { transform: translateX(5px); }
+}
+
+.guided-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 1.5rem;
+    gap: 1rem;
+}
+
+/* Guided Complete Screen */
+.guided-complete { text-align: center; padding: 1rem 0; }
+.guided-complete-check {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; font-weight: 700; color: var(--bg-dark);
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 40px rgba(0, 245, 160, 0.3);
+    animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 700px) {
+    .history-drawer { width: 100%; }
+    .history-toggle-btn { top: 1rem; left: 1rem; }
+}
+
 /* ===================== NAME INPUT ===================== */
 .name-input {
     width: 100%;

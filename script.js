@@ -19,7 +19,8 @@ const views = {
     landing: document.getElementById('landing'),
     input: document.getElementById('input-view'),
     compat: document.getElementById('compat-view'),
-    result: document.getElementById('result-view')
+    result: document.getElementById('result-view'),
+    guided: document.getElementById('guided-view')
 };
 
 // ── Init ───────────────────────────────────────────────────────────────
@@ -75,6 +76,180 @@ function usePrompt(btn) {
     textarea.setSelectionRange(textarea.value.length, textarea.value.length);
     updateCharCounter();
     playUiSound(528, 'sine', 0.08);
+}
+
+// ── Guided Q&A Mode ──────────────────────────────────────────────────
+const GUIDED_QUESTIONS = [
+    {
+        q: "What do you want most right now?",
+        hint: "A goal, an outcome, a feeling you're chasing — be specific, not abstract.",
+        placeholder: "e.g. I want to finally launch my own thing but something always stops me..."
+    },
+    {
+        q: "What's secretly holding you back?",
+        hint: "Not the excuse you tell people — the real reason underneath it.",
+        placeholder: "e.g. I'm terrified of public failure. I'd rather not try than try and look stupid..."
+    },
+    {
+        q: "How do others describe you vs. how you see yourself?",
+        hint: "There's almost always a gap. Explore it honestly.",
+        placeholder: "e.g. People say I'm confident and driven. I actually feel like an impostor most of the time..."
+    },
+    {
+        q: "What do you keep failing at, despite trying?",
+        hint: "A recurring pattern, not a one-off mistake.",
+        placeholder: "e.g. I start projects with full energy then quietly abandon them when they get hard..."
+    },
+    {
+        q: "What are you most proud of, and why?",
+        hint: "Your proudest moments reveal your core values.",
+        placeholder: "e.g. I built something from scratch with no help. It showed me I can figure anything out..."
+    },
+    {
+        q: "When things go wrong, what does your gut do first?",
+        hint: "Fight, freeze, flee, or fix? Be brutally honest.",
+        placeholder: "e.g. I go quiet, withdraw, then overcompensate later with a burst of energy..."
+    }
+];
+
+let guidedAnswers = [];
+let guidedIndex = 0;
+
+function startGuidedMode() {
+    guidedAnswers = new Array(GUIDED_QUESTIONS.length).fill('');
+    guidedIndex = 0;
+    document.getElementById('guided-question-area').innerHTML = `
+        <h2 class="guided-question" id="guided-question-text"></h2>
+        <p class="guided-hint" id="guided-hint-text"></p>
+        <textarea id="guided-answer" class="guided-textarea" rows="4"></textarea>
+    `;
+    document.getElementById('guided-nav').style.display = 'flex';
+    document.getElementById('guided-name').value = '';
+    renderGuidedQuestion();
+    navigateTo('guided');
+    playUiSound(440, 'sine', 0.1);
+}
+
+function exitGuided() {
+    navigateTo('landing');
+}
+
+function renderGuidedQuestion() {
+    const total = GUIDED_QUESTIONS.length;
+    const q = GUIDED_QUESTIONS[guidedIndex];
+
+    document.getElementById('guided-current').textContent = guidedIndex + 1;
+    document.getElementById('guided-total').textContent = total;
+    document.getElementById('guided-bar-fill').style.width = `${((guidedIndex + 1) / total) * 100}%`;
+
+    // Animate question in
+    const area = document.getElementById('guided-question-area');
+    area.classList.remove('slide-in');
+    void area.offsetWidth; // reflow
+    area.classList.add('slide-in');
+
+    document.getElementById('guided-question-text').textContent = q.q;
+    document.getElementById('guided-hint-text').textContent = q.hint;
+    const ta = document.getElementById('guided-answer');
+    ta.placeholder = q.placeholder;
+    ta.value = guidedAnswers[guidedIndex] || '';
+    setTimeout(() => ta.focus(), 350);
+
+    document.getElementById('guided-back-btn').style.visibility = guidedIndex === 0 ? 'hidden' : 'visible';
+    const nextBtn = document.getElementById('guided-next-btn');
+    nextBtn.textContent = guidedIndex === total - 1 ? 'Build My Profile →' : 'Next →';
+}
+
+function guidedNext() {
+    const ta = document.getElementById('guided-answer');
+    const answer = ta.value.trim();
+    if (!answer) {
+        ta.classList.add('shake');
+        setTimeout(() => ta.classList.remove('shake'), 500);
+        return;
+    }
+    guidedAnswers[guidedIndex] = answer;
+    if (guidedIndex < GUIDED_QUESTIONS.length - 1) {
+        guidedIndex++;
+        renderGuidedQuestion();
+        playUiSound(528, 'sine', 0.08);
+    } else {
+        guidedAnswers[guidedIndex] = answer;
+        showGuidedComplete();
+    }
+}
+
+function guidedBack() {
+    guidedAnswers[guidedIndex] = document.getElementById('guided-answer').value.trim();
+    if (guidedIndex > 0) {
+        guidedIndex--;
+        renderGuidedQuestion();
+    }
+}
+
+function showGuidedComplete() {
+    document.getElementById('guided-bar-fill').style.width = '100%';
+    document.getElementById('guided-nav').style.display = 'none';
+    document.getElementById('guided-question-area').innerHTML = `
+        <div class="guided-complete">
+            <div class="guided-complete-check">✓</div>
+            <h2 class="guided-question">Profile built. Choose your analysis.</h2>
+            <p class="guided-hint">Your answers have been compiled. Pick how the AI should read you.</p>
+            <div class="action-grid" style="margin-top:2rem">
+                <button onclick="runGuidedAnalysis('decode')" class="btn-action decode">
+                    <span class="btn-icon">👁</span>
+                    <span class="btn-label">Decode Me</span>
+                    <span class="btn-sub">Big Five + MBTI</span>
+                </button>
+                <button onclick="runGuidedAnalysis('roast')" class="btn-action roast">
+                    <span class="btn-icon">🔥</span>
+                    <span class="btn-label">Roast Me</span>
+                    <span class="btn-sub">Brutal Truth</span>
+                </button>
+                <button onclick="runGuidedAnalysis('boost')" class="btn-action boost">
+                    <span class="btn-icon">🚀</span>
+                    <span class="btn-label">Boost Me</span>
+                    <span class="btn-sub">30-Day Blueprint</span>
+                </button>
+            </div>
+        </div>
+    `;
+    playUiSound(660, 'sine', 0.2);
+}
+
+async function runGuidedAnalysis(mode) {
+    const userName = document.getElementById('guided-name').value.trim();
+    const profile = GUIDED_QUESTIONS.map((q, i) =>
+        `Q: ${q.q}\nA: ${guidedAnswers[i]}`
+    ).join('\n\n');
+
+    // Sync to main textarea for history
+    document.getElementById('user-input').value = profile;
+    if (userName) document.getElementById('user-name-input').value = userName;
+    updateCharCounter();
+
+    currentMode = mode;
+    const glowBg = document.getElementById('glow-bg');
+    glowBg.className = 'glow-bg';
+    if (mode === 'roast') glowBg.classList.add('mode-roast');
+    else if (mode === 'boost') glowBg.classList.add('mode-boost');
+
+    showLoader(mode);
+
+    let aiData = null;
+    if (apiKey) {
+        const promptFn = { decode: buildDecodePrompt, roast: buildRoastPrompt, boost: buildBoostPrompt }[mode];
+        const rawText = await callGemini(promptFn(profile, userName));
+        if (rawText) aiData = parseAIResponse(rawText);
+    }
+    const data = aiData || { decode: mockDecodeData, roast: mockRoastData, boost: mockBoostData }[mode];
+    lastResultText = buildShareText(data, mode);
+    saveToHistory(mode, data, profile, userName);
+
+    hideLoader();
+    renderSoloResults(mode, data);
+    prepareIdCard(data, mode, userName);
+    navigateTo('result');
 }
 
 // ── History Management ─────────────────────────────────────────────────

@@ -1016,7 +1016,8 @@ async function shareResult() {
 }
 
 function shareToTwitter() {
-    const text = encodeURIComponent(lastResultText || 'I just got analyzed by NEURACORE AI. The results are wild. — neuracore.ai');
+    const defaultText = `I just got brutally analyzed by NEURACORE AI.\nTry it if you dare: lokesh8hatt.github.io/neuracore 💀`;
+    const text = encodeURIComponent(lastResultText || defaultText);
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
 }
 
@@ -1026,12 +1027,12 @@ async function shareGeneric() {
             await navigator.share({
                 title: 'My NEURACORE AI Analysis',
                 text: lastResultText || 'Check out my NEURACORE AI behavioral analysis!',
-                url: 'https://neuracore.ai'
+                url: 'https://lokesh8hatt.github.io/neuracore'
             });
         } catch(e) { /* dismissed */ }
     } else {
         // Fallback: copy to clipboard
-        navigator.clipboard.writeText(lastResultText).then(() => {
+        navigator.clipboard.writeText(lastResultText + '\n\nlokesh8hatt.github.io/neuracore').then(() => {
             const btn = document.querySelector('.btn-social.native');
             const orig = btn.innerText;
             btn.innerText = '✓ Copied!';

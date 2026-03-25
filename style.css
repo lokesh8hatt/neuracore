@@ -743,6 +743,28 @@ textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(33
     box-shadow: 0 0 0 3px rgba(157,80,187,0.1);
 }
 
+/* ===================== SPONSOR LINK ===================== */
+.sponsor-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.sponsor-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-color: var(--accent-pink);
+    transform: translateY(-2px);
+}
+
 /* ===================== PROMPT CHIPS ===================== */
 .prompt-chips {
     display: flex;
